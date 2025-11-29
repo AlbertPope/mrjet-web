@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>下载管理器</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>下载任务管理器</h1>
+        </header>
+
+        <div class="status-panel">
+            <h2>系统状态</h2>
+            <div class="status-grid">
+                <div class="status-item">
+                    <span class="label">下载状态:</span>
+                    <span class="value {% if is_running %}running{% else %}stopped{% endif %}">
+                        {{ "运行中" if is_running else "已停止" }}
+                    </span>
+                </div>
+                <div class="status-item">
+                    <span class="label">当前任务:</span>
+                    <span class="value">
+                        {% if current_task %}
+                            {{ current_task.url }}
+                        {% else %}
+                            无
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="status-item">
+                    <span class="label">等待任务:</span>
+                    <span class="value">{{ tasks|length }}</span>
+                </div>
+            </div>
+
+            <!--progress bar-->
+            {% if current_task and current_task.progress %}
+            <div class="progress-section">
+                <h3>当前进度</h3>
+                <div class="progress-info">
+                    <span class="progress-stage">{{ current_task.progress.stage }}</span>
+                    <span class="progress-percent">{{ current_task.progress.percent }}%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ current_task.progress.percent }}%;"></div>
+                </div>
+                <div class="progress-detail">
+                    {{ current_task.progress.raw_line }}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="control-buttons">
+                {% if not is_running %}
+                    <button onclick="startDownload()" class="btn btn-start">开始下载</button>
+                {% else %}
+                    <button onclick="stopDownload()" class="btn btn-stop">停止下载</button>
+                {% endif %}
+                <a href="/tasks" class="btn btn-secondary">管理任务</a>
+            </div>
+        </div>
+
+        <div class="config-panel">
+            <h2>配置设置</h2>
+            <form id="configForm">
+                <div class="form-group">
+                    <label for="resolution">分辨率 (可选):</label>
+                    <input type="text" id="resolution" name="resolution" value="{{ config.resolution }}" placeholder="例如: 720p, 1080p">
+                </div>
+
+                <div class="form-group">
+                    <label for="download_dir">下载目录:</label>
+                    <input type="text" id="download_dir" name="download_dir" value="{{ config.download_dir }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="min_interval">最小间隔(分钟):</label>
+                    <input type="number" id="min_interval" name="min_interval" value="{{ config.min_interval }}" min="1" max="60" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="max_interval">最大间隔(分钟):</label>
+                    <input type="number" id="max_interval" name="max_interval" value="{{ config.max_interval }}" min="1" max="60" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">保存配置</button>
+            </form>
+        </div>
+
+        <div class="add-task-panel">
+            <h2>添加下载任务</h2>
+            <form id="taskForm">
+                <div class="form-group">
+                    <label for="url">下载URL:</label>
+                    <input type="url" id="url" name="url" placeholder="https://example.com/file.zip" required>
+                </div>
+                <button type="submit" class="btn btn-primary">添加到队列</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/static/js/task_index.js"></script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+m3u8
+pym3u8downloader
+patchright
+curl_cffi
+Flask

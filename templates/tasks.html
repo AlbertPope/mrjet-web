@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>任务管理 - 下载管理器</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>下载任务管理</h1>
+            <a href="/" class="btn btn-secondary">返回首页</a>
+        </header>
+
+        <div class="current-task">
+            <h2>当前任务</h2>
+            {% if current_task %}
+                <div class="task-card current">
+                    <div class="task-url">{{ current_task.url }}</div>
+                    <div class="task-status">{{ current_task.status }}</div>
+
+                    {% if current_task.progress %}
+                    <div class="progress-section">
+                        <div class="progress-info">
+                            <span class="progress-stage">{{ current_task.progress.stage }}</span>
+                            <span class="progress-percent">{{ current_task.progress.percent }}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ current_task.progress.percent }}%;"></div>
+                        </div>
+                        <div class="progress-detail">
+                            {{ current_task.progress.raw_line }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="task-time">开始时间: {{ current_task.start_time }}</div>
+                </div>
+            {% else %}
+                <p>没有正在执行的任务</p>
+            {% endif %}
+        </div>
+
+        <div class="task-queue">
+            <h2>等待队列 ({{ tasks|length }} 个任务)</h2>
+            {% if tasks %}
+                <div class="task-list">
+                    {% for task in tasks %}
+                    <div class="task-card">
+                        <div class="task-url">{{ task.url }}</div>
+                        <div class="task-meta">
+                            <span>添加时间: {{ task.added_time }}</span>
+                            <span>状态: {{ task.status }}</span>
+                        </div>
+                        <button onclick="removeTask({{ loop.index0 }})" class="btn btn-danger btn-sm">删除</button>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>任务队列为空</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="/static/js/tasks.js"></script>
+</body>
+</html>

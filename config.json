@@ -1,0 +1,6 @@
+{
+  "download_dir": "./downloads",
+  "min_interval": 7,
+  "max_interval": 15,
+  "resolution": ""
+}
